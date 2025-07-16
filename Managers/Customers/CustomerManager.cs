@@ -32,6 +32,7 @@ public class CustomerManager : ICustomerManager
         customer.Name = updatedCustomer.Name;
         customer.Phone = updatedCustomer.Phone;
         customer.Address = updatedCustomer.Address;
+        customer.CreatedAt = updatedCustomer.CreatedAt;
         await _customerRepository.UpdateAsync(customer);
     }
 

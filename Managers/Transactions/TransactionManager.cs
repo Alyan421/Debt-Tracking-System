@@ -43,11 +43,11 @@ namespace Debt_Tracking_System.Managers.Transactions
             else
             {
                 customer.TotalDebt += transaction.Type == "Debit" ? transaction.Amount : -transaction.Amount;
+                customer.CreatedAt = transaction.Date;
                 await _customerRepository.UpdateAsync(customer);
             }
 
             transaction.CustomerId = customer.Id;
-            transaction.Date = DateTime.UtcNow;
 
             await _transactionRepository.AddAsync(transaction);
             return transaction;
