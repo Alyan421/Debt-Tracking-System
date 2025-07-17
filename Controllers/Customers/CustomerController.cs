@@ -2,10 +2,12 @@
 using Debt_Tracking_System.Controllers.Customers;
 using Debt_Tracking_System.Managers.Customers;
 using Debt_Tracking_System.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Debt_Tracking_System.Controllers.Customers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class CustomerController : ControllerBase

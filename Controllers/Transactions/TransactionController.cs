@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Debt_Tracking_System.Managers.Transactions;
-using Microsoft.AspNetCore.Mvc;
 using Debt_Tracking_System.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Debt_Tracking_System.Controllers.Transactions;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class TransactionController : ControllerBase

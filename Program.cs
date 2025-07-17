@@ -3,18 +3,20 @@ using Debt_Tracking_System.Managers.Transactions;
 using Debt_Tracking_System.Managers.Customers;
 using Debt_Tracking_System.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-//Automapper configuration
+// Automapper configuration
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Configure DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register repositories
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -23,13 +25,41 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 builder.Services.AddScoped<ICustomerManager, CustomerManager>(); // Optional if used
 
-// Enable CORS (allow any origin, method, header - adjust as needed)
+builder.Services.AddAuthentication("BasicAuthentication")
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
+
+// Read allowed origins from environment variable
+var allowedOrigins = Environment.GetEnvironmentVariable("CORS_ORIGINS")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+// Enable CORS with environment-based policy
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy => policy.AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
+    if (builder.Environment.IsDevelopment())
+    {
+        options.AddPolicy("EnvCors", policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+    }
+    else
+    {
+        options.AddPolicy("EnvCors", policy =>
+        {
+            if (allowedOrigins != null && allowedOrigins.Length > 0)
+            {
+                policy.WithOrigins(allowedOrigins)
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            }
+            else
+            {
+                policy.DisallowCredentials();
+            }
+        });
+    }
 });
 
 // Swagger
@@ -56,9 +86,10 @@ else
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll");
+app.UseCors("EnvCors");
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 
