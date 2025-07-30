@@ -277,7 +277,7 @@ namespace Debt_Tracking_System.Managers.Transactions
                                         .BorderBottom(1)
                                         .BorderColor(Colors.Grey.Lighten2)
                                         .Padding(4)
-                                        .Text($"Rs{transaction.Amount:F2}")
+                                        .Text($"Rs {transaction.Amount:F2}")
                                         .FontColor(transaction.Type == "Debit" ? Colors.Red.Medium : Colors.Green.Medium)
                                         .SemiBold();
                                 }
@@ -299,14 +299,14 @@ namespace Debt_Tracking_System.Managers.Transactions
                                     column.Item().PaddingTop(8).Row(summaryRow =>
                                     {
                                         summaryRow.RelativeItem().Text("Total Debits:");
-                                        summaryRow.ConstantItem(80).Text($"Rs{totalDebits:F2}")
+                                        summaryRow.ConstantItem(80).Text($"Rs {totalDebits:F2}")
                                             .FontColor(Colors.Red.Medium).SemiBold().AlignRight();
                                     });
 
                                     column.Item().Row(summaryRow =>
                                     {
                                         summaryRow.RelativeItem().Text("Total Credits:");
-                                        summaryRow.ConstantItem(80).Text($"Rs{totalCredits:F2}")
+                                        summaryRow.ConstantItem(80).Text($"Rs {totalCredits:F2}")
                                             .FontColor(Colors.Green.Medium).SemiBold().AlignRight();
                                     });
 
@@ -314,7 +314,7 @@ namespace Debt_Tracking_System.Managers.Transactions
                                     {
                                         summaryRow.RelativeItem().Text("Current Balance:")
                                             .FontSize(12).SemiBold();
-                                        summaryRow.ConstantItem(80).Text($"Rs{Math.Abs(balance):F2}")
+                                        summaryRow.ConstantItem(80).Text($"Rs {Math.Abs(balance):F2}")
                                             .FontColor(balance >= 0 ? Colors.Red.Medium : Colors.Green.Medium)
                                             .FontSize(12).SemiBold().AlignRight();
                                     });
@@ -328,7 +328,7 @@ namespace Debt_Tracking_System.Managers.Transactions
                                     {
                                         summaryRow.RelativeItem().Text("Total Outstanding Debt:")
                                             .FontSize(12).SemiBold();
-                                        summaryRow.ConstantItem(80).Text($"Rs{customer.TotalDebt:F2}")
+                                        summaryRow.ConstantItem(80).Text($"Rs {customer.TotalDebt:F2}")
                                             .FontSize(12).SemiBold().AlignRight()
                                             .FontColor(customer.TotalDebt >= 0 ? Colors.Red.Medium : Colors.Green.Medium);
                                     });
