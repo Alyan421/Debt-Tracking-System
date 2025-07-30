@@ -17,23 +17,26 @@ public class CustomerManager : ICustomerManager
 
     public async Task<Customer> AddCustomerAsync(Customer customer)
     {
-        customer.TotalDebt = 0;
         customer.CreatedAt = DateTime.UtcNow;
 
         await _customerRepository.AddAsync(customer);
         return customer;
     }
 
-    public async Task UpdateCustomerAsync(Customer updatedCustomer)
+    public async Task<Customer?> UpdateCustomerAsync(Customer customer)
     {
-        var customer = await _customerRepository.GetByIdAsync(updatedCustomer.Id);
-        if (customer == null) throw new Exception("Customer not found");
+        var existingCustomer = await _customerRepository.GetByIdAsync(customer.Id);
+        if (existingCustomer == null)
+            return null;
 
-        customer.Name = updatedCustomer.Name;
-        customer.Phone = updatedCustomer.Phone;
-        customer.Address = updatedCustomer.Address;
-        customer.CreatedAt = updatedCustomer.CreatedAt;
-        await _customerRepository.UpdateAsync(customer);
+        existingCustomer.Name = customer.Name;
+        existingCustomer.Phone = customer.Phone;
+        existingCustomer.Address = customer.Address;
+        existingCustomer.TotalDebt = customer.TotalDebt;
+        existingCustomer.CreatedAt = customer.CreatedAt;
+
+        await _customerRepository.UpdateAsync(existingCustomer);
+        return existingCustomer;
     }
 
     public async Task DeleteCustomerAsync(int id)

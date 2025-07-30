@@ -42,8 +42,11 @@ public class TransactionController : ControllerBase
         try
         {
             var transaction = _mapper.Map<Transaction>(dto);
-            await _transactionManager.UpdateTransactionAsync(transaction);
-            return NoContent();
+            var updatedTransaction = await _transactionManager.UpdateTransactionAsync(transaction);
+            if (updatedTransaction == null)
+                return NotFound();
+            var resultDto = _mapper.Map<GetTransactionDTO>(updatedTransaction);
+            return Ok(resultDto);
         }
         catch (Exception ex)
         {
@@ -135,6 +138,24 @@ public class TransactionController : ControllerBase
             var transactions = await _transactionManager.FilterByCustomerAndDateRangeAsync(customerId, startDate, endDate);
             var dtos = _mapper.Map<List<GetTransactionDTO>>(transactions);
             return Ok(dtos);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+
+    [HttpGet("bill")]
+    public async Task<IActionResult> GenerateBill(
+    [FromQuery] int customerId,
+    [FromQuery] DateTime startDate,
+    [FromQuery] DateTime endDate)
+    {
+        try
+        {
+            var billBytes = await _transactionManager.GenerateBillAsync(customerId, startDate, endDate);
+            return File(billBytes, "application/pdf", $"Bill_Customer_{customerId}_{startDate:yyyyMMdd}_{endDate:yyyyMMdd}.pdf");
         }
         catch (Exception ex)
         {

@@ -43,8 +43,11 @@ public class CustomerController : ControllerBase
         try
         {
             var customer = _mapper.Map<Customer>(dto);
-            await _customerManager.UpdateCustomerAsync(customer);
-            return NoContent();
+            var updatedCustomer = await _customerManager.UpdateCustomerAsync(customer);
+            if (updatedCustomer == null)
+                return NotFound();
+            var resultDto = _mapper.Map<GetCustomerDTO>(updatedCustomer);
+            return Ok(resultDto);
         }
         catch (Exception ex)
         {

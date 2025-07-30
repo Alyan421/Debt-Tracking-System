@@ -7,8 +7,7 @@ namespace Debt_Tracking_System.Managers.Customers;
 public interface ICustomerManager
 {
     Task<Customer> AddCustomerAsync(Customer customer);
-    Task UpdateCustomerAsync(Customer updatedCustomer);
-    Task DeleteCustomerAsync(int id);
+    Task<Customer?> UpdateCustomerAsync(Customer updatedCustomer); Task DeleteCustomerAsync(int id);
     Task<Customer?> GetCustomerByIdAsync(int id);
     Task<IEnumerable<Customer>> GetAllCustomersAsync();
 }
