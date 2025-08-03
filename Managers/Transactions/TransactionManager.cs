@@ -164,7 +164,7 @@ namespace Debt_Tracking_System.Managers.Transactions
                             row.RelativeItem()
                                 .Column(column =>
                                 {
-                                    column.Item().Text("FF Fancy Collection")
+                                    column.Item().Text("F.F Fancy Collection")
                                         .FontSize(18)
                                         .SemiBold()
                                         .FontColor(Colors.Blue.Darken2);
@@ -342,14 +342,58 @@ namespace Debt_Tracking_System.Managers.Transactions
                         });
 
                     page.Footer()
-                        .AlignCenter()
-                        .DefaultTextStyle(x => x.FontSize(10).FontColor(Colors.Grey.Medium))
-                        .Text(x =>
+                        .PaddingVertical(10)
+                        .Column(column =>
                         {
-                            x.Span("Page ");
-                            x.CurrentPageNumber();
-                            x.Span(" of ");
-                            x.TotalPages();
+                            column.Item().LineHorizontal(1).LineColor(Colors.Grey.Medium);
+
+                            column.Item().PaddingTop(10).Row(row =>
+                            {
+                                row.RelativeItem()
+                                    .Column(leftColumn =>
+                                    {
+                                        leftColumn.Item().Text("Contact Information")
+                                            .FontSize(12)
+                                            .SemiBold()
+                                            .FontColor(Colors.Blue.Darken2);
+
+                                        leftColumn.Item().Text("M.Faisal Khan: 0345-2597059 | 0323-8237316")
+                                            .FontSize(10)
+                                            .FontColor(Colors.Black);
+
+                                        leftColumn.Item().Text("M.Farhan Khan: 0333-2268288")
+                                            .FontSize(10)
+                                            .FontColor(Colors.Black);
+                                    });
+
+                                row.RelativeItem()
+                                    .Column(rightColumn =>
+                                    {
+                                        rightColumn.Item().Text("Address")
+                                            .FontSize(12)
+                                            .SemiBold()
+                                            .FontColor(Colors.Blue.Darken2);
+
+                                        rightColumn.Item().Text("Shop 13A-B, Anees Market")
+                                            .FontSize(10)
+                                            .FontColor(Colors.Black);
+
+                                        rightColumn.Item().Text("New Neham Road, Karachi")
+                                            .FontSize(10)
+                                            .FontColor(Colors.Black);
+                                    });
+                            });
+
+                            column.Item().PaddingTop(10)
+                                .AlignCenter()
+                                .DefaultTextStyle(x => x.FontSize(10).FontColor(Colors.Grey.Medium))
+                                .Text(x =>
+                                {
+                                    x.Span("Page ");
+                                    x.CurrentPageNumber();
+                                    x.Span(" of ");
+                                    x.TotalPages();
+                                });
                         });
                 });
             });
