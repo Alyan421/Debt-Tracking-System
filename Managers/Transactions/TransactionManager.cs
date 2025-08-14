@@ -65,6 +65,15 @@ namespace Debt_Tracking_System.Managers.Transactions
 
             var oldAmount = existingTransaction.Amount;
             var oldType = existingTransaction.Type;
+            var oldCustomerId = existingTransaction.CustomerId; // Store the old customer ID
+
+            // First, remove the old transaction's impact from the old customer
+            var oldCustomer = await _customerRepository.GetByIdAsync(oldCustomerId);
+            if (oldCustomer != null)
+            {
+                oldCustomer.TotalDebt -= oldType == "Debit" ? oldAmount : -oldAmount;
+                await _customerRepository.UpdateAsync(oldCustomer);
+            }
 
             // Update transaction properties
             existingTransaction.Type = transaction.Type;
@@ -74,12 +83,12 @@ namespace Debt_Tracking_System.Managers.Transactions
 
             await _transactionRepository.UpdateAsync(existingTransaction);
 
-            var customer = await _customerRepository.GetByIdAsync(existingTransaction.CustomerId);
-            if (customer != null)
+            // Add the new transaction's impact to the new customer (which might be the same customer)
+            var newCustomer = await _customerRepository.GetByIdAsync(existingTransaction.CustomerId);
+            if (newCustomer != null)
             {
-                customer.TotalDebt -= oldType == "Debit" ? oldAmount : -oldAmount;
-                customer.TotalDebt += existingTransaction.Type == "Debit" ? existingTransaction.Amount : -existingTransaction.Amount;
-                await _customerRepository.UpdateAsync(customer);
+                newCustomer.TotalDebt += existingTransaction.Type == "Debit" ? existingTransaction.Amount : -existingTransaction.Amount;
+                await _customerRepository.UpdateAsync(newCustomer);
             }
 
             return existingTransaction;
