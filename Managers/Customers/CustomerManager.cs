@@ -32,7 +32,6 @@ public class CustomerManager : ICustomerManager
         existingCustomer.Name = customer.Name;
         existingCustomer.Phone = customer.Phone;
         existingCustomer.Address = customer.Address;
-        existingCustomer.TotalDebt = customer.TotalDebt;
         existingCustomer.CreatedAt = customer.CreatedAt;
 
         await _customerRepository.UpdateAsync(existingCustomer);
