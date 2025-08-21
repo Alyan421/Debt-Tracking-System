@@ -31,7 +31,7 @@ namespace Debt_Tracking_System.Managers.Transactions
                 throw new Exception("Invalid transaction type. Use 'Debit' or 'Credit'.");
             if (transaction.Amount <= 0)
                 throw new Exception("Transaction amount cannot be negative");
-            if (customer == null)
+ /*           if (customer == null)
             {
                 customer = new Customer
                 {
@@ -48,7 +48,7 @@ namespace Debt_Tracking_System.Managers.Transactions
                 customer.TotalDebt += transaction.Type == "Debit" ? transaction.Amount : -transaction.Amount;
                 customer.CreatedAt = transaction.Date;
                 await _customerRepository.UpdateAsync(customer);
-            }
+            }*/
 
             transaction.CustomerId = customer.Id;
 
