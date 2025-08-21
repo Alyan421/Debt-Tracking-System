@@ -9,17 +9,40 @@ namespace Debt_Tracking_System.Managers.Customers;
 public class CustomerManager : ICustomerManager
 {
     private readonly IGenericRepository<Customer> _customerRepository;
+    private readonly IGenericRepository<Transaction> _transactionRepository;
 
-    public CustomerManager(IGenericRepository<Customer> customerRepository)
+    public CustomerManager(IGenericRepository<Customer> customerRepository, IGenericRepository<Transaction> transactionRepository)
     {
+
         _customerRepository = customerRepository;
+        _transactionRepository = transactionRepository;
     }
 
     public async Task<Customer> AddCustomerAsync(Customer customer)
     {
         customer.CreatedAt = DateTime.UtcNow;
+        var initialDebt = customer.TotalDebt;
+
+        customer.TotalDebt = 0;
 
         await _customerRepository.AddAsync(customer);
+
+        if (initialDebt != 0)
+        {
+            var openingTransaction = new Transaction
+            {
+                CustomerId = customer.Id,
+                Type = initialDebt > 0 ? "Debit" : "Credit",
+                Amount = Math.Abs(initialDebt),
+                Description = "Opening Balance",
+                Date = customer.CreatedAt
+            };
+            await _transactionRepository.AddAsync(openingTransaction);
+
+            customer.TotalDebt = initialDebt;
+            await _customerRepository.UpdateAsync(customer);
+        }
+
         return customer;
     }
 

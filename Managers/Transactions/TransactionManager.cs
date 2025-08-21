@@ -145,10 +145,21 @@ namespace Debt_Tracking_System.Managers.Transactions
             if (customer == null)
                 throw new Exception("Customer not found");
 
-            // Get transactions for the customer in the date range
+            // Get transactions for the customer in the date range, ordered by date ascending
             var transactions = await FilterByCustomerAndDateRangeAsync(customerId, startDate, endDate);
+            var transactionList = transactions.OrderBy(t => t.Date).ThenBy(t => t.Id).ToList();
 
-            var transactionList = transactions.OrderBy(t => t.Date).ToList();
+            // Prepare running balance list
+            var balances = new List<decimal>(transactionList.Count);
+            decimal runningBalance = customer.TotalDebt;
+
+            // Calculate balances in reverse, so the last transaction's balance is the customer's total debt
+            for (int i = transactionList.Count - 1; i >= 0; i--)
+            {
+                balances.Insert(0, runningBalance);
+                var t = transactionList[i];
+                runningBalance -= t.Type == "Debit" ? t.Amount : -t.Amount;
+            }
 
             decimal totalDebits = transactionList.Where(t => t.Type == "Debit").Sum(t => t.Amount);
             decimal totalCredits = transactionList.Where(t => t.Type == "Credit").Sum(t => t.Amount);
@@ -228,6 +239,7 @@ namespace Debt_Tracking_System.Managers.Transactions
                                     columns.RelativeColumn(1.5f); // Type
                                     columns.RelativeColumn(3); // Description
                                     columns.RelativeColumn(1.5f); // Amount
+                                    columns.RelativeColumn(1.5f); // Balance
                                 });
 
                                 // Header row
@@ -259,9 +271,19 @@ namespace Debt_Tracking_System.Managers.Transactions
                                     .FontColor(Colors.White)
                                     .SemiBold();
 
+                                table.Cell()
+                                    .Background(Colors.Blue.Medium)
+                                    .Padding(6)
+                                    .Text("Balance")
+                                    .FontColor(Colors.White)
+                                    .SemiBold();
+
                                 // Data rows with reduced padding
-                                foreach (var transaction in transactionList)
+                                for (int i = 0; i < transactionList.Count; i++)
                                 {
+                                    var transaction = transactionList[i];
+                                    var bal = balances[i];
+
                                     table.Cell()
                                         .BorderBottom(1)
                                         .BorderColor(Colors.Grey.Lighten2)
@@ -288,6 +310,14 @@ namespace Debt_Tracking_System.Managers.Transactions
                                         .Padding(4)
                                         .Text($"Rs {transaction.Amount:F2}")
                                         .FontColor(transaction.Type == "Debit" ? Colors.Red.Medium : Colors.Green.Medium)
+                                        .SemiBold();
+
+                                    table.Cell()
+                                        .BorderBottom(1)
+                                        .BorderColor(Colors.Grey.Lighten2)
+                                        .Padding(4)
+                                        .Text($"Rs {bal:F2}")
+                                        .FontColor(bal >= 0 ? Colors.Red.Medium : Colors.Green.Medium)
                                         .SemiBold();
                                 }
                             });
