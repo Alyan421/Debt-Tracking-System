@@ -80,6 +80,7 @@ namespace Debt_Tracking_System.Managers.Transactions
             existingTransaction.Amount = transaction.Amount;
             existingTransaction.Description = transaction.Description;
             existingTransaction.CustomerId = transaction.CustomerId;
+            existingTransaction.Date = transaction.Date;
 
             await _transactionRepository.UpdateAsync(existingTransaction);
 
