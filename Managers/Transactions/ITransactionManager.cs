@@ -13,9 +13,9 @@ namespace Debt_Tracking_System.Managers.Transactions
         Task<Transaction?> GetTransactionByIdAsync(int id);
         Task<IEnumerable<Transaction>> GetAllTransactionsAsync();
         Task<IEnumerable<Transaction>> FilterByCustomerAsync(int customerId);
-        Task<IEnumerable<Transaction>> FilterByDateRangeAsync(DateTime startDate, DateTime endDate);
-        Task<IEnumerable<Transaction>> FilterByCustomerAndDateRangeAsync(int customerId, DateTime startDate, DateTime endDate);
-        Task<byte[]> GenerateBillAsync(int customerId, DateTime startDate, DateTime endDate);
-        Task<byte[]> GenerateTransactionReportAsync(string type, int? customerId = null, DateTime? startDate = null, DateTime? endDate = null);
+        Task<IEnumerable<Transaction>> FilterByDateRangeAsync(DateOnly startDate, DateOnly endDate);
+        Task<IEnumerable<Transaction>> FilterByCustomerAndDateRangeAsync(int customerId, DateOnly startDate, DateOnly endDate);
+        Task<byte[]> GenerateBillAsync(int customerId, DateOnly startDate, DateOnly endDate);
+        Task<byte[]> GenerateTransactionReportAsync(string type, int? customerId = null, DateOnly? startDate = null, DateOnly? endDate = null);
     }
 }

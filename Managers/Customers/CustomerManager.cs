@@ -20,7 +20,6 @@ public class CustomerManager : ICustomerManager
 
     public async Task<Customer> AddCustomerAsync(Customer customer)
     {
-        customer.CreatedAt = DateTime.UtcNow;
         var initialDebt = customer.TotalDebt;
 
         customer.TotalDebt = 0;
@@ -55,7 +54,6 @@ public class CustomerManager : ICustomerManager
         existingCustomer.Name = customer.Name;
         existingCustomer.Phone = customer.Phone;
         existingCustomer.Address = customer.Address;
-        existingCustomer.CreatedAt = customer.CreatedAt;
 
         await _customerRepository.UpdateAsync(existingCustomer);
         return existingCustomer;

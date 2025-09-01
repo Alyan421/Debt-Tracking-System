@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Debt_Tracking_System.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250717145549_InitialPostgresMigration")]
-    partial class InitialPostgresMigration
+    [Migration("20250901131719_ConvertTimestampToDate")]
+    partial class ConvertTimestampToDate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,8 +38,8 @@ namespace Debt_Tracking_System.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("CreatedAt")
+                        .HasColumnType("date");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -52,7 +52,7 @@ namespace Debt_Tracking_System.Migrations
                         .HasColumnType("character varying(15)");
 
                     b.Property<decimal>("TotalDebt")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric(18,2)");
 
                     b.HasKey("Id");
 
@@ -73,12 +73,13 @@ namespace Debt_Tracking_System.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("Type")
                         .IsRequired()

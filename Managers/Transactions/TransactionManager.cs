@@ -33,15 +33,7 @@ namespace Debt_Tracking_System.Managers.Transactions
                 throw new Exception("Transaction amount cannot be negative");
             if (customer == null)
             {
-                customer = new Customer
-                {
-                    Name = "Unknown",
-                    Phone = "",
-                    Address = "",
-                    TotalDebt = transaction.Type == "Debit" ? transaction.Amount : -transaction.Amount,
-                    CreatedAt = DateTime.UtcNow
-                };
-                await _customerRepository.AddAsync(customer);
+                throw new Exception("Customer Does not exist");
             }
             else
             {
@@ -125,19 +117,19 @@ namespace Debt_Tracking_System.Managers.Transactions
             return await _transactionRepository.FindAsync(t => t.CustomerId == customerId);
         }
 
-        public async Task<IEnumerable<Models.Transaction>> FilterByDateRangeAsync(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<Models.Transaction>> FilterByDateRangeAsync(DateOnly startDate, DateOnly endDate)
         {
-            return await _transactionRepository.FindAsync(t => t.Date.Date >= startDate.Date && t.Date.Date <= endDate.Date);
+            return await _transactionRepository.FindAsync(t => t.Date >= startDate && t.Date <= endDate);
         }
 
-        public async Task<IEnumerable<Models.Transaction>> FilterByCustomerAndDateRangeAsync(int customerId, DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<Models.Transaction>> FilterByCustomerAndDateRangeAsync(int customerId, DateOnly startDate, DateOnly endDate)
         {
             return await _transactionRepository.FindAsync(t =>
-                t.CustomerId == customerId && t.Date.Date >= startDate.Date && t.Date.Date <= endDate.Date);
+                t.CustomerId == customerId && t.Date >= startDate && t.Date <= endDate);
         }
 
 
-        public async Task<byte[]> GenerateBillAsync(int customerId, DateTime startDate, DateTime endDate)
+        public async Task<byte[]> GenerateBillAsync(int customerId, DateOnly startDate, DateOnly endDate)
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -208,7 +200,7 @@ namespace Debt_Tracking_System.Managers.Transactions
                                     column.Item().Text($"Bill Generated At:")
                                                        .FontSize(14)
                                                        .SemiBold();
-                                    column.Item().Text($"{DateTime.Now:MM/dd/yyyy}")
+                                    column.Item().Text($"{DateOnly.FromDateTime(DateTime.Now):MM/dd/yyyy}")
                                         .FontSize(14);
                                 });
                         });
@@ -441,18 +433,18 @@ namespace Debt_Tracking_System.Managers.Transactions
             return document.GeneratePdf();
         }
 
-        public async Task<byte[]> GenerateTransactionReportAsync(string type, int? customerId = null, DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<byte[]> GenerateTransactionReportAsync(string type, int? customerId = null, DateOnly? startDate = null, DateOnly? endDate = null)
         {
             IEnumerable<Models.Transaction> transactions = type switch
             {
                 "customer" => await _transactionRepository.FindAsync(t => t.CustomerId == customerId),
                 "date" => await _transactionRepository.FindAsync(t =>
                     startDate.HasValue && endDate.HasValue &&
-                    t.Date.Date >= startDate.Value.Date && t.Date.Date <= endDate.Value.Date),
+                    t.Date >= startDate.Value && t.Date <= endDate.Value),
                 "both" => await _transactionRepository.FindAsync(t =>
                     t.CustomerId == customerId &&
                     startDate.HasValue && endDate.HasValue &&
-                    t.Date.Date >= startDate.Value.Date && t.Date.Date <= endDate.Value.Date),
+                    t.Date >= startDate.Value && t.Date <= endDate.Value),
                 _ => await _transactionRepository.GetAllAsync()
             };
             ExcelPackage.License.SetNonCommercialPersonal("Muhammad Alyan"); //This will also set the Author property to the name provided in the argument.

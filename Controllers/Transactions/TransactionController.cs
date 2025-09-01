@@ -115,7 +115,7 @@ public class TransactionController : ControllerBase
     }
 
     [HttpGet("filter-by-date-range")]
-    public async Task<IActionResult> FilterByDateRange([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+    public async Task<IActionResult> FilterByDateRange([FromQuery] DateOnly startDate, [FromQuery] DateOnly endDate)
     {
         try
         {
@@ -131,7 +131,7 @@ public class TransactionController : ControllerBase
 
 
     [HttpGet("filter-by-customer-and-date-range")]
-    public async Task<IActionResult> FilterByCustomerAndDateRange([FromQuery] int customerId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+    public async Task<IActionResult> FilterByCustomerAndDateRange([FromQuery] int customerId, [FromQuery] DateOnly startDate, [FromQuery] DateOnly endDate)
     {
         try
         {
@@ -149,8 +149,8 @@ public class TransactionController : ControllerBase
     [HttpGet("bill")]
     public async Task<IActionResult> GenerateBill(
     [FromQuery] int customerId,
-    [FromQuery] DateTime startDate,
-    [FromQuery] DateTime endDate)
+    [FromQuery] DateOnly startDate,
+    [FromQuery] DateOnly endDate)
     {
         try
         {
@@ -168,8 +168,8 @@ public class TransactionController : ControllerBase
     public async Task<IActionResult> GenerateReport(
         [FromQuery] string type,
         [FromQuery] int? customerId = null,
-        [FromQuery] DateTime? startDate = null,
-        [FromQuery] DateTime? endDate = null)
+        [FromQuery] DateOnly? startDate = null,
+        [FromQuery] DateOnly? endDate = null)
     {
         try
         {
